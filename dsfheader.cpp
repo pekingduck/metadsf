@@ -1,0 +1,265 @@
+/***************************************************************************
+    copyright            : (C) 2014 by Peking Duck Labs
+    email                : pekingducklabs@gmail.com
+ ***************************************************************************/
+
+/***************************************************************************
+ *   This library is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU Lesser General Public License version   *
+ *   2.1 as published by the Free Software Foundation.                     *
+ *                                                                         *
+ *   This library is distributed in the hope that it will be useful, but   *
+ *   WITHOUT ANY WARRANTY; without even the implied warranty of            *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU     *
+ *   Lesser General Public License for more details.                       *
+ *                                                                         *
+ *   You should have received a copy of the GNU Lesser General Public      *
+ *   License along with this library; if not, write to the Free Software   *
+ *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA         *
+ *   02110-1301  USA                                                       *
+ ***************************************************************************/
+
+#include <bitset>
+
+#include <taglib/tbytevector.h>
+#include <taglib/tstring.h>
+#include <taglib/trefcounter.h>
+
+#include "dsfheader.h"
+
+using namespace TagLib;
+
+class DSF::Header::HeaderPrivate : public RefCounter
+{
+public:
+  HeaderPrivate() :
+    isValid(false),
+    version(Version1),
+    sampleCount(0),
+    channelType(Stereo),
+    channelNum(2),
+    sampleRate(0),
+    bitsPerSample(0),
+    ID3v2Offset(0),
+    fileSize(0)
+  {}
+
+  bool isValid;
+  Version version; // format version
+  uint64_t sampleCount;
+  ChannelType channelType;
+  unsigned short channelNum;
+  unsigned int sampleRate; 
+  unsigned short bitsPerSample;
+  uint64_t ID3v2Offset;
+  uint64_t fileSize;
+};
+
+////////////////////////////////////////////////////////////////////////////////
+// public members
+////////////////////////////////////////////////////////////////////////////////
+
+DSF::Header::Header(const ByteVector &data)
+{
+  d = new HeaderPrivate;
+  parse(data);
+}
+
+DSF::Header::Header(const Header &h) : d(h.d)
+{
+  d->ref();
+}
+
+DSF::Header::~Header()
+{
+  if (d->deref())
+    delete d;
+}
+
+bool DSF::Header::isValid() const
+{
+  return d->isValid;
+}
+
+DSF::Header::Version DSF::Header::version() const
+{
+  return d->version;
+}
+
+unsigned int DSF::Header::sampleRate() const
+{
+  return d->sampleRate;
+}
+
+DSF::Header::ChannelType DSF::Header::channelType() const
+{
+  return d->channelType;
+}
+
+unsigned short DSF::Header::channelNum() const 
+{
+  return d->channelNum;
+}
+
+uint64_t DSF::Header::sampleCount() const
+{
+  return d->sampleCount;
+}
+
+uint64_t DSF::Header::ID3v2Offset() const
+{
+  return d->ID3v2Offset;
+}
+
+uint64_t DSF::Header::fileSize() const
+{
+  return d->fileSize;
+}
+
+unsigned short DSF::Header::bitsPerSample() const
+{
+  return d->bitsPerSample;
+}
+
+DSF::Header &DSF::Header::operator=(const Header &h)
+{
+  if(&h == this)
+    return *this;
+
+  if(d->deref())
+    delete d;
+
+  d = h.d;
+  d->ref();
+  return *this;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// private members
+////////////////////////////////////////////////////////////////////////////////
+
+void DSF::Header::parse(const ByteVector &data)
+{
+  if (data.size() < DSD_HEADER_SIZE + FMT_HEADER_SIZE) {
+    std::cerr <<"DSF::Header::parse(): header size incorrect" << std::endl;
+    return;
+  }
+
+  const char *hdr = data.data();
+  size_t offset = 0;
+
+  //
+  // ******** DSD chunk header ********
+  // DSD header chunk should start with "DSD ".
+  //
+  if (hdr[0] != 'D' || hdr[1] != 'S' || hdr[2] != 'D' || hdr[3] != ' ') 
+  {
+    std::cerr <<"DSD::Header::parse(): DSD header's first 4 bytes != 'DSD '" << std::endl;
+    return;
+  }
+  offset += 4;
+  
+  // The next 8 bytes contain the size of DSD header
+  // (numerical data is stored in little endian)
+  if (data.toLongLong(offset, false) != DSD_HEADER_SIZE)
+  {
+    std::cerr <<"DSD::Header::parse(): DSD header size is incorrect" << std::endl;
+    return;
+  }
+  offset += LONG_INT_SIZE;
+
+  // The next 8 bytes contains the file size
+  d->fileSize = bytesToUInt64(&hdr[0], offset);
+  offset += LONG_INT_SIZE;
+
+  // The next 8 bytes contains the offset to id3v2 tag (0 if not exists)
+  d->ID3v2Offset = bytesToUInt64(&hdr[0], offset);
+  offset += LONG_INT_SIZE;
+
+  // 
+  // ********* FMT chunk ********
+  //
+  // FMT header chunk should start with "fmt ".
+  //
+  if (hdr[offset] != 'f' || hdr[offset + 1] != 'm' || 
+      hdr[offset + 2] != 't' || hdr[offset + 3] != ' ') 
+  {
+    std::cerr <<"DSD::Header::parse(): FMT header's first 4 bytes != 'fmt '" << std::endl;
+    return;
+  }
+  offset += 4;
+
+  // The next 8 bytes contain the size of FMT header, which should be 52
+  if (data.toLongLong(offset, false) != FMT_HEADER_SIZE)
+  {
+    std::cerr <<"DSD::Header::parse(): FMT header size is incorrect" << std::endl;
+    return;
+  }
+  offset += LONG_INT_SIZE;
+
+  // Format version
+  // There's only version 1 for now...
+  uint ver = data.toUInt(offset, false);
+  if (ver != 1) {
+    std::cerr <<"DSD::Header::parse(): format version != 1" << std::endl;
+    return;
+  }
+  d->version = static_cast<Version>(ver);
+  offset += INT_SIZE;
+
+  // Format ID
+  if (data.toUInt(offset, false) != 0) {
+    std::cerr <<"DSD::Header::parse(): format ID != 0" << std::endl;
+    return;
+  }
+  offset += INT_SIZE;
+
+  // Channel Type
+  uint ct = data.toUInt(offset, false);
+  if (ct < 1 || ct > 7) {
+    std::cerr <<"DSD::Header::parse(): channel type out of range" << std::endl;
+    return;
+  }
+  d->channelType = static_cast<ChannelType>(ct);
+  offset += INT_SIZE;
+
+  // Channel Num
+  d->channelNum = data.toUInt(offset, false);
+  if (d->channelNum < MinType || d->channelNum > MaxType) {
+    std::cerr <<"DSD::Header::parse(): channel num out of range" << std::endl;
+    return;
+  }
+  offset += INT_SIZE;
+
+  // Sampling frequency
+  d->sampleRate = data.toUInt(offset, false);
+  if (d->sampleRate != 2822400 && d->sampleRate != 5644800) {
+    std::cerr <<"DSD::Header::parse(): invalid sampling frequency" << std::endl;
+    return;
+  }
+  offset += INT_SIZE;
+
+  // Bits per sample
+  d->bitsPerSample = data.toUInt(offset, false);
+  if (d->bitsPerSample != 1 && d->bitsPerSample != 8) {
+    std::cerr <<"DSD::Header::parse(): bits per sample invalid" << std::endl;
+    return;
+  }
+  offset += INT_SIZE;
+
+  // Sample count
+  d->sampleCount = bytesToUInt64(&hdr[0], offset);
+  offset += LONG_INT_SIZE;
+
+  // Block size per channel
+  if (data.toUInt(offset, false) != 4096) {
+    std::cerr <<"DSD::Header::parse(): block size != 4096" << std::endl;
+    return;
+  }
+    //offset += 4;
+
+  // Reserved
+  // offset += 4;
+
+  d->isValid = true;
+}
