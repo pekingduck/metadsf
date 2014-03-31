@@ -29,13 +29,24 @@
 //namespace myopt {
 
 enum OptionIndex { 
-  UNKNOWN, HELP, SHOW_INFO, SHOW_TAGS,
-  ENCODING, SEPARATOR, ADD_TAG, ADD_TAGS_FROM_FILE,
-  SET_TAG, SET_TAGS_FROM_FILE, SET_ARTIST,
-  SET_ALBUM, SET_TITLE, SET_COMMENT, SET_GENRE,
-  SET_YEAR, SET_TRACK, REMOVE_TAGS, REMOVE_EVERYTHING,
-  IMPORT_PICTURE, REMOVE_PICTURES, EXPORT_PICTURES, VERSION,
-  ID3V2_VERSION, DRY_RUN, REMOVE_ALL_PICTURES
+  UNKNOWN, 
+  HELP, 
+  SHOW_INFO, 
+  SHOW_TAGS,
+  ENCODING, 
+  VERSION,
+  ID3V2_VERSION, 
+  ADD_TAG, 
+  ADD_TAGS_FROM_FILE,
+  SET_TAG,
+  SET_TAGS_FROM_FILE,
+  REMOVE_TAGS, 
+  REMOVE_EVERYTHING,
+  REMOVE_ALL_PICTURES,
+  IMPORT_PICTURE,
+  REMOVE_PICTURES,
+  EXPORT_PICTURES,
+  DRY_RUN
 };
 
 const option::Descriptor usage[] = {
@@ -44,28 +55,19 @@ const option::Descriptor usage[] = {
   { SHOW_INFO, 0, "i", "show-info", option::Arg::None, "--show-info\n          Print file info" },
   { SHOW_TAGS, 0, "t", "show-tags", option::Arg::None, "--show-tags\n          Print tags" },
   { ENCODING, 0, "e", "encoding", option::Arg::Optional, "--encoding=...\n          Set encoding. Valid encodings are: UTF8(default), LATIN1, UTF16, UTF16LE, UTF16BE" },
-  //{ SEPARATOR, 0, "", "separator", option::Arg::Optional, "--separator=,\n          Set separator for multi-field input" },
   { ADD_TAG, 0, "a", "add-tag", option::Arg::Optional, "--add-tag=<NAME>=<VALUE>\n          Add tag" },
   { ADD_TAGS_FROM_FILE, 0, "", "add-tags-from-file", option::Arg::Optional, "--add-tags-from-file=<FILE>\n          Add tags from a file, one per line (TAG=VALUE)" },
   { SET_TAG, 0, "s", "set-tag", option::Arg::Optional, "--set-tag=NAME=...\n          Set tag. Old value will be overwritten" },
   { SET_TAGS_FROM_FILE, 0, "", "set-tags-from-file", option::Arg::Optional, "--set-tags-from-file=<FILE>\n          Set tags from a file, one per line (TAG=VALUE)" },
-  /*
-  { SET_ARTIST, 0, "", "set-artist", option::Arg::Optional, "--set-artist=...\n          Set artist" },
-  { SET_ALBUM, 0, "", "set-album", option::Arg::Optional, "--set-album=...\n          Set album" },
-  { SET_TITLE, 0, "", "set-title", option::Arg::Optional, "--set-title=...\n          Set title" },
-  { SET_COMMENT, 0, "", "set-comment", option::Arg::Optional, "--set-comment=...\n          Set comment" },
-  { SET_GENRE, 0, "", "set-genre", option::Arg::Optional, "--set-genre=...\n          Set genre" },
-  { SET_YEAR, 0, "", "set-year", option::Arg::Optional, "--set-year=...\n          Set year" },
-  { SET_TRACK, 0, "", "set-track", option::Arg::Optional, "--set-track=...\n         Set track number" },
-  */
   { REMOVE_TAGS, 0, "r", "remove-tags", option::Arg::Optional, "--remove-tags=a,b,c\n          Remove ALL occurences of the specified tags" },
   { REMOVE_PICTURES, 0, "", "remove-pictures", option::Arg::Optional, "--remove-pictures=t1,t2,t3\n          Remove pictures of the specified types" },
   { REMOVE_ALL_PICTURES, 0, "", "remove-all-pictures", option::Arg::Optional, "--remove-all-pictures\n          Remove ALL pictures" },
   { REMOVE_EVERYTHING, 0, "", "remove-everything", option::Arg::Optional, "--remove-everything\n          Remove *ALL* ID3v2 tags including pictures" },
   { ID3V2_VERSION, 0, "", "id3v2-version", option::Arg::Optional, "--id3v2-version\n          Which ID3V2 version to save. Can be either 3 or 4" },
-  { VERSION, 0, "", "version", option::Arg::None, "--version\n          Display version info" },
-  { IMPORT_PICTURE, 0, "", "import-picture", option::Arg::Optional, "--import-picture=file[|type|comment]\n          Import picture into file."},
-  { DRY_RUN, 0, "d", "dry-run", option::Arg::None, "--dry-run\n          Run without saving"},
+  { VERSION, 0, "v", "version", option::Arg::None, "--version\n          Display version info" },
+  { IMPORT_PICTURE, 0, "p", "import-picture", option::Arg::Optional, "--import-picture=file[|type|comment]\n          Import picture into file."},
+  { DRY_RUN, 0, "d", "dry-run", option::Arg::None, "--dry-run\n          Run without saving" },
+  { EXPORT_PICTURES, 0, "", "export-all-pictures", option::Arg::Optional, "--export-all-pictures\n          Export pictures" }, 
   { 0, 0, 0, 0, 0, 0 }
 };
 
@@ -123,6 +125,7 @@ void OptionObj::print()
   std::cout << "Remove all pictures? " << removeAllPics << std::endl;
   std::cout << "Show tags? " << showTags << std::endl;
   std::cout << "Show info? " << showInfo << std::endl;
+  std::cout << "Export pics? " << exportPics << std::endl;
   std::cout << "Dry run? " << dryRun << std::endl;
 
   std::cout << "File List: " << std::endl;
@@ -131,13 +134,12 @@ void OptionObj::print()
   printVector(removeTagList);
   std::cout << "Add Pic List: " << std::endl;
   printVector(addPicList);
-  std::cout << "Pic Delete List: " << std::endl;
+  std::cout << "Delete Pic List: " << std::endl;
   printVector(removePicList);
-
   std::cout << "addTagMap: " << std::endl;
   printMap(addTagMap);
-  std::cout << "handyMap: " << std::endl;
-  printMap(handyMap);
+  //std::cout << "handyMap: " << std::endl;
+  //printMap(handyMap);
 }  
   
   
@@ -176,6 +178,9 @@ bool OptionObj::parse(int argc, char *argv[])
   }
   if (options[SHOW_TAGS].count() >= 1) {
     showTags = true;
+  }
+  if (options[EXPORT_PICTURES].count() >= 1) {
+    exportPics = true;
   }
   if (options[DRY_RUN].count() >= 1) {
     dryRun = true;
@@ -255,24 +260,25 @@ bool OptionObj::parse(int argc, char *argv[])
   getOptionPairsToMap(options, ADD_TAG, addTagMap);
 
   // Processing handy commands such as --set-artist/title/.... etc
-  std::vector<std::pair<std::string, OptionIndex> > handyCmds = {
-    { "artist", SET_ARTIST },
-    { "title", SET_TITLE },
-    { "genre", SET_GENRE },
-    { "track", SET_TRACK },
-    { "album", SET_ALBUM },
-    { "year", SET_YEAR }
-  };
-  for (auto &cmd : handyCmds) { 
-    TagLib::String val;
-    c = getUniqueReqdArg(options, cmd.second, val);
-    if (val.size() > 0) {
-      handyMap[cmd.first] = val;
-    }
-  }
+  // std::vector<std::pair<std::string, OptionIndex> > handyCmds = {
+  //   { "artist", SET_ARTIST },
+  //   { "title", SET_TITLE },
+  //   { "genre", SET_GENRE },
+  //   { "track", SET_TRACK },
+  //   { "album", SET_ALBUM },
+  //   { "year", SET_YEAR }
+  // };
+  // for (auto &cmd : handyCmds) { 
+  //   TagLib::String val;
+  //   c = getUniqueReqdArg(options, cmd.second, val);
+  //   if (val.size() > 0) {
+  //     handyMap[cmd.first] = val;
+  //   }
+  // }
 
   // --import-picture
   getOptionsToVector(options, IMPORT_PICTURE, addPicList);
+
   return true;
 } // parse()
 
@@ -329,7 +335,7 @@ int getUniqueReqdArg(option::Option *op, OptionIndex index, TagLib::String &val)
 
 void OptionObj::printUsage()
 {
-#include "usage.txt"
+#include "usage.h"
     std::cerr << text << std::endl;
 }
 //} // namespace

@@ -42,4 +42,6 @@ bool isReadableFile(const char *path);
 
 bool stringToLong(const std::string &, long &l);
 
+bool writeFileFromVector(const char *path, const TagLib::ByteVector &v);
+
 #endif

@@ -236,35 +236,36 @@ int MetaDSF::setTagTIPL(const TagLib::PropertyMap &m, bool replace)
   return nReplaced;
 }
 
-void MetaDSF::setTitle(const TagLib::String &val) {
-  _i->deleteTags("TIT2");
-  _i->_file.ID3v2Tag()->setTitle(val);
-}
 
-void MetaDSF::setGenre(const TagLib::String &val) {
-  _i->deleteTags("TCON");
-  _i->_file.ID3v2Tag()->setGenre(val);
-}
+// void MetaDSF::setTitle(const TagLib::String &val) {
+//   _i->deleteTags("TIT2");
+//   _i->_file.ID3v2Tag()->setTitle(val);
+// }
 
-void MetaDSF::setYear(unsigned int year) {
-  _i->deleteTags("TDRC");
-  _i->_file.ID3v2Tag()->setYear(year);
-}
+// void MetaDSF::setGenre(const TagLib::String &val) {
+//   _i->deleteTags("TCON");
+//   _i->_file.ID3v2Tag()->setGenre(val);
+// }
 
-void MetaDSF::setAlbum(const TagLib::String &val) {
-  _i->deleteTags("TALB");
-  _i->_file.ID3v2Tag()->setAlbum(val);
-}
+// void MetaDSF::setYear(unsigned int year) {
+//   _i->deleteTags("TDRC");
+//   _i->_file.ID3v2Tag()->setYear(year);
+// }
 
-void MetaDSF::setTrack(unsigned int track) {
-  _i->deleteTags("TRCK");
-  _i->_file.ID3v2Tag()->setTrack(track);
-}
+// void MetaDSF::setAlbum(const TagLib::String &val) {
+//   _i->deleteTags("TALB");
+//   _i->_file.ID3v2Tag()->setAlbum(val);
+// }
 
-void MetaDSF::setArtist(const TagLib::String &val) {
-  _i->deleteTags("TPE1");
-  _i->_file.ID3v2Tag()->setArtist(val);
-}
+// void MetaDSF::setTrack(unsigned int track) {
+//   _i->deleteTags("TRCK");
+//   _i->_file.ID3v2Tag()->setTrack(track);
+// }
+
+// void MetaDSF::setArtist(const TagLib::String &val) {
+//   _i->deleteTags("TPE1");
+//   _i->_file.ID3v2Tag()->setArtist(val);
+// }
 
 int MetaDSF::deleteTags(const TagLib::String &key) 
 {
@@ -368,6 +369,33 @@ int MetaDSF::deletePictures(const TagLib::String &ptype)
   _i->deleteFrames(dl);
   _i->_changed = true;
   return dl.size();
+}
+
+bool MetaDSF::exportPictures(const char *prefix) const
+{
+  std::map<std::string, unsigned int> counter;
+  TagLib::ID3v2::FrameList l = _i->_file.ID3v2Tag()->frameList("APIC");
+  TagLib::ID3v2::FrameList::ConstIterator it;
+  for (it = l.begin(); it != l.end(); ++it) {
+    TagLib::ID3v2::AttachedPictureFrame *f =
+      static_cast<TagLib::ID3v2::AttachedPictureFrame *>(*it);
+    std::string fname = prefix;
+    std::string tname = picTypeDesc[f->type()].toCString();
+    std::string ext = MIMETypeToExtMap[f->mimeType()].toCString();
+    if (counter.find(tname) == counter.end())
+      counter[tname] = 1;
+    else
+      counter[tname] += 1;
+    fname += "_";
+    fname += tname;
+    fname += "_";
+    fname += std::to_string(counter[tname]);
+    fname += ".";
+    fname += ext;
+    //std::cout << "fname = " << fname << std::endl;
+    writeFileFromVector(fname.c_str(), f->picture());
+  }
+  return true;
 }
 
 void MetaDSF::setID3v2Version(int v)
@@ -592,4 +620,10 @@ StringMap MetaDSF::extToMIMETypeMap = {
   { "gif","image/gif" },
   { "tif","image/tiff" },
   { "tiff","image/tiff" }
+};
+
+StringMap MetaDSF::MIMETypeToExtMap = {
+  { "image/jpeg", "jpg" },
+  { "image/gif", "gif" },
+  { "image/tiff", "tiff" }
 };

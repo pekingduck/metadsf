@@ -128,6 +128,11 @@ int main(int argc, char *argv[])
     if (!opt.dryRun)
       dsf.save();
 
+    if (opt.exportPics) {
+      std::string basename = 
+	std::string(fileName.toCString()).substr(0, fileName.rfind("."));
+      dsf.exportPictures(basename.c_str());
+    }
     std::string prefix = "";
     if (opt.fileList.size() > 1) {
       prefix += fileName.toCString();

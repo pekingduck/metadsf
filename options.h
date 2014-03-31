@@ -38,19 +38,21 @@ public:
   TagLib::String addTagsFile;
   TagLib::String separator;
   StringMap addTagMap;
-  StringMap handyMap;
+  //StringMap handyMap;
   StringVector fileList;
   StringVector addPicList;
   StringVector removeTagList;
   StringVector removePicList;
+  StringVector exportPicList;
   bool showTags;
   bool showInfo;
   bool removeEverything;
   bool dryRun;
   bool removeAllPics;
+  bool exportPics;
 
  OptionObj() : showTags(false), showInfo(false), removeEverything(false),
-    dryRun(false), removeAllPics(false) {}
+    dryRun(false), removeAllPics(false), exportPics(false) {}
   void printUsage();
   void print();
   bool parse(int argc, char *argv[]);  

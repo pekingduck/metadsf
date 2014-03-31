@@ -52,5 +52,10 @@ UTF16LE, UTF16BE
           Display version info
 --import-picture=file[|type|comment]
           Import picture into file.
+--export-picture
+          Export all pictures
 --dry-run
-          Run without saving)";
+          Run without saving
+
+For more complete documentation please go to https://github.com/pekingduck/metadsf
+)";

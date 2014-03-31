@@ -51,6 +51,8 @@ class MetaDSF {
 		     const TagLib::ID3v2::AttachedPictureFrame::Type,
 		     const TagLib::String &comment = "");
 
+  bool exportPictures(const char *prefix) const;
+
   // Set simple textual data
   int setTag(const TagLib::String &key, 
 	     const TagLib::String &val, bool replace = false);
@@ -75,12 +77,12 @@ class MetaDSF {
 
   // Handy functions
   // (All delete existing data first)
-  void setArtist(const TagLib::String &);
-  void setGenre(const TagLib::String &);
-  void setTitle(const TagLib::String &);
-  void setAlbum(const TagLib::String &);
-  void setYear(unsigned int);
-  void setTrack(unsigned int);
+  /* void setArtist(const TagLib::String &); */
+  /* void setGenre(const TagLib::String &); */
+  /* void setTitle(const TagLib::String &); */
+  /* void setAlbum(const TagLib::String &); */
+  /* void setYear(unsigned int); */
+  /* void setTrack(unsigned int); */
 
 
   // Delete tags by key. Return the number of tags deleted (same key can
@@ -123,6 +125,7 @@ class MetaDSF {
   static std::map<TagLib::String, TagLib::String::Type> encodingType;
   static StringMap frameIDToNameMap;
   static StringMap extToMIMETypeMap;
+  static StringMap MIMETypeToExtMap;
 
   class MetaDSFImpl;
   MetaDSFImpl *_i;

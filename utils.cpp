@@ -132,4 +132,13 @@ bool stringToLong(const std::string &s, long &l)
   }
 }
 
+bool writeFileFromVector(const char *path, const TagLib::ByteVector &v) {
+  std::ofstream o(path, std::ofstream::binary);
+  if (!o) {
+    return false;
+  }
+  o.write(v.data(), v.size());
+  return true;
+}
+
 //} // namespace
