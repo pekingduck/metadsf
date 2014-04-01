@@ -60,7 +60,7 @@ class MetaDSF::MetaDSFImpl {
   /////////////// Variables //////////////
   bool _changed; // whether there's any change to metadata
                  // save() uses this to determine whether to write to disk
-  TagLib::DSF::File _file;
+  DSFFile _file;
   int _ID3v2_version; // What version of ID3v2 to save (3 or 4)
   TagLib::String::Type _encoding; // Text encoding
 };
@@ -96,7 +96,7 @@ bool MetaDSF::isOK() const
 
 void MetaDSF::printInfo(const char *prefix) const 
 {
-  TagLib::DSF::Properties *p = static_cast<TagLib::DSF::Properties *>
+  DSFProperties *p = static_cast<DSFProperties *>
     (_i->_file.audioProperties());
 
   if (p) {

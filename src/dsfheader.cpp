@@ -27,9 +27,7 @@
 
 #include "dsfheader.h"
 
-using namespace TagLib;
-
-class DSF::Header::HeaderPrivate : public RefCounter
+class DSFHeader::HeaderPrivate : public TagLib::RefCounter
 {
 public:
   HeaderPrivate() :
@@ -59,69 +57,69 @@ public:
 // public members
 ////////////////////////////////////////////////////////////////////////////////
 
-DSF::Header::Header(const ByteVector &data)
+DSFHeader::DSFHeader(const TagLib::ByteVector &data)
 {
   d = new HeaderPrivate;
   parse(data);
 }
 
-DSF::Header::Header(const Header &h) : d(h.d)
+DSFHeader::DSFHeader(const DSFHeader &h) : d(h.d)
 {
   d->ref();
 }
 
-DSF::Header::~Header()
+DSFHeader::~DSFHeader()
 {
   if (d->deref())
     delete d;
 }
 
-bool DSF::Header::isValid() const
+bool DSFHeader::isValid() const
 {
   return d->isValid;
 }
 
-DSF::Header::Version DSF::Header::version() const
+DSFHeader::Version DSFHeader::version() const
 {
   return d->version;
 }
 
-unsigned int DSF::Header::sampleRate() const
+unsigned int DSFHeader::sampleRate() const
 {
   return d->sampleRate;
 }
 
-DSF::Header::ChannelType DSF::Header::channelType() const
+DSFHeader::ChannelType DSFHeader::channelType() const
 {
   return d->channelType;
 }
 
-unsigned short DSF::Header::channelNum() const 
+unsigned short DSFHeader::channelNum() const 
 {
   return d->channelNum;
 }
 
-uint64_t DSF::Header::sampleCount() const
+uint64_t DSFHeader::sampleCount() const
 {
   return d->sampleCount;
 }
 
-uint64_t DSF::Header::ID3v2Offset() const
+uint64_t DSFHeader::ID3v2Offset() const
 {
   return d->ID3v2Offset;
 }
 
-uint64_t DSF::Header::fileSize() const
+uint64_t DSFHeader::fileSize() const
 {
   return d->fileSize;
 }
 
-unsigned short DSF::Header::bitsPerSample() const
+unsigned short DSFHeader::bitsPerSample() const
 {
   return d->bitsPerSample;
 }
 
-DSF::Header &DSF::Header::operator=(const Header &h)
+DSFHeader &DSFHeader::operator=(const DSFHeader &h)
 {
   if(&h == this)
     return *this;
@@ -138,10 +136,10 @@ DSF::Header &DSF::Header::operator=(const Header &h)
 // private members
 ////////////////////////////////////////////////////////////////////////////////
 
-void DSF::Header::parse(const ByteVector &data)
+void DSFHeader::parse(const TagLib::ByteVector &data)
 {
   if (data.size() < DSD_HEADER_SIZE + FMT_HEADER_SIZE) {
-    std::cerr <<"DSF::Header::parse(): header size incorrect" << std::endl;
+    std::cerr <<"DSFHeader::parse(): header size incorrect" << std::endl;
     return;
   }
 

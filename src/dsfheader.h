@@ -22,143 +22,138 @@
 #ifndef TAGLIB_DSFHEADER_H
 #define TAGLIB_DSFHEADER_H
 
-#include <taglib/taglib_export.h>
+//#include <taglib/taglib_export.h>
 
-namespace TagLib {
+//! An implementation of DSF header
 
-  class ByteVector;
+/*!
+ * This is an implementation of DSF header. Check out
+ * <a href="http://dsd-guide.com/sites/default/files/white-papers/DSFFileFormatSpec_E.pdf">this</a>
+ * document as a reference.
+ */
 
-  namespace DSF {
+#include <taglib/tbytevector.h>
 
-    //! An implementation of DSF header
+class DSFHeader
+{
+ public:
+  static const int DSD_HEADER_SIZE = 28;
+  static const int FMT_HEADER_SIZE = 52;
+  static const int LONG_INT_SIZE = 8;    // width of a long integer
+  static const int INT_SIZE = 4;         // width of an integer
 
-    /*!
-     * This is an implementation of DSF header. Check out
-     * <a href="http://dsd-guide.com/sites/default/files/white-papers/DSFFileFormatSpec_E.pdf">this</a>
-     * document as a reference.
-     */
+  /*!
+   * Parses an DSF header based on \a data.
+   */
+  DSFHeader(const TagLib::ByteVector &data);
 
-    class TAGLIB_EXPORT Header
-    {
-    public:
-      static const int DSD_HEADER_SIZE = 28;
-      static const int FMT_HEADER_SIZE = 52;
-      static const int LONG_INT_SIZE = 8;    // width of a long integer
-      static const int INT_SIZE = 4;         // width of an integer
+  /*!
+   * Does a shallow copy of \a h.
+   */
+  DSFHeader(const DSFHeader &h);
 
-      /*!
-       * Parses an DSF header based on \a data.
-       */
-      Header(const ByteVector &data);
+  /*!
+   * Destroys this Header instance.
+   */
+  virtual ~DSFHeader();
 
-      /*!
-       * Does a shallow copy of \a h.
-       */
-      Header(const Header &h);
+  /*!
+   * Returns true if header has legal values.
+   */
+  bool isValid() const;
 
-      /*!
-       * Destroys this Header instance.
-       */
-      virtual ~Header();
+  /*!
+   * The DSD file format version
+   */
+  enum Version {
+    //! DSD Version 1
+    Version1 = 1
+  };
 
-      /*!
-       * Returns true if header has legal values.
-       */
-      bool isValid() const;
+  /*!
+   * Channel Type:
+   */
+  enum ChannelType {
+    MinType = 0,
 
-      /*!
-       * The DSD file format version
-       */
-      enum Version {
-        //! DSD Version 1
-        Version1 = 1
-      };
+    //! 1: mono
+    Mono = 1,
+    //! 2: stereo (front left, front right)
+    Stereo = 2,
+    //! 3: 3 channels (front left, front right, center)
+    ThreeChannels = 3,
+    //! 4: quad (front left/right, back left/right)
+    Quad = 4,
+    //! 5: 4 channels (front left, front right, low frequency, center)
+    FourChannels = 5,
+    //! 6: 5 channels (front left/right, back left/right, center)
+    FiveChannels = 6,
+    //! 7: 5.1 channels (front left/right, back left/right, center, low freq.)
+    FiveOneChannels = 7,
 
-      /*!
-       * Channel Type:
-       */
-      enum ChannelType {
-	MinType = 0,
+    MaxType = 8
+  };
 
-	//! 1: mono
-	Mono = 1,
-	//! 2: stereo (front left, front right)
-	Stereo = 2,
-	//! 3: 3 channels (front left, front right, center)
-	ThreeChannels = 3,
-	//! 4: quad (front left/right, back left/right)
-	Quad = 4,
-	//! 5: 4 channels (front left, front right, low frequency, center)
-	FourChannels = 5,
-	//! 6: 5 channels (front left/right, back left/right, center)
-	FiveChannels = 6,
-	//! 7: 5.1 channels (front left/right, back left/right, center, low freq.)
-	FiveOneChannels = 7,
+  /*!
+   * Returns the DSD Version of the header.
+   */
+  Version version() const;
 
-	MaxType = 8
-      };
+  /*!
+   * Returns the Channel Type of the header
+   */
+  ChannelType channelType() const;
 
-      /*!
-       * Returns the DSD Version of the header.
-       */
-      Version version() const;
+  /*!
+   * Returns the Channel Num of the header
+   */
+  unsigned short channelNum() const;
 
-      /*!
-       * Returns the Channel Type of the header
-       */
-      ChannelType channelType() const;
+  /*!
+   * Returns the sample rate in Hz.
+   */
+  unsigned int sampleRate() const;
 
-      /*!
-       * Returns the Channel Num of the header
-       */
-      unsigned short channelNum() const;
+  /*!
+   * Returns the sample count
+   */
+  uint64_t sampleCount() const;
 
-      /*!
-       * Returns the sample rate in Hz.
-       */
-      unsigned int sampleRate() const;
+  /*!
+   * Returns the bits per sample
+   */
+  unsigned short bitsPerSample() const;
 
-      /*!
-       * Returns the sample count
-       */
-      uint64_t sampleCount() const;
+  /*!
+   * Returns the offset to the metadata block
+   */
+  uint64_t ID3v2Offset() const;
 
-      /*!
-       * Returns the bits per sample
-       */
-      unsigned short bitsPerSample() const;
+  /*!
+   * Returns the file size
+   */
+  uint64_t fileSize() const;
 
-      /*!
-       * Returns the offset to the metadata block
-       */
-      uint64_t ID3v2Offset() const;
+  /*!
+   * Makes a shallow copy of the header.
+   */
+  DSFHeader &operator=(const DSFHeader &h);
 
-      /*!
-       * Returns the file size
-       */
-      uint64_t fileSize() const;
-
-      /*!
-       * Makes a shallow copy of the header.
-       */
-      Header &operator=(const Header &h);
-
-      // Assume LSB comes first
-      inline uint64_t bytesToUInt64(const char *v, uint64_t offset = 0) {
-	uint64_t res = 0;
-	for (int i = 0; i < LONG_INT_SIZE; i++) {
-	  res |= static_cast<uint64_t>(static_cast<unsigned char>(v[offset + i])) 
-	    << (i * 8);
-	}
-	return res;
-      }
-    private:
-      void parse(const ByteVector &data);
-
-      class HeaderPrivate;
-      HeaderPrivate *d;
-    };
+  // Assume LSB comes first
+  inline uint64_t bytesToUInt64(const char *v, uint64_t offset = 0) {
+    uint64_t res = 0;
+    for (int i = 0; i < LONG_INT_SIZE; i++) {
+      res |= static_cast<uint64_t>(static_cast<unsigned char>(v[offset + i])) 
+	<< (i * 8);
+    }
+    return res;
   }
-}
+ private:
+  void parse(const TagLib::ByteVector &data);
+
+  class HeaderPrivate;
+  HeaderPrivate *d;
+};
+
 
 #endif

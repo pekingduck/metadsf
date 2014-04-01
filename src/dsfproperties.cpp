@@ -24,12 +24,10 @@
 #include "dsfproperties.h"
 #include "dsffile.h"
 
-using namespace TagLib;
-
-class DSF::Properties::PropertiesPrivate
+class DSFProperties::PropertiesPrivate
 {
 public:
-  PropertiesPrivate(File *f, ReadStyle s) :
+  PropertiesPrivate(DSFFile *f, ReadStyle s) :
     file(f),
     style(s),
     length(0),
@@ -40,12 +38,12 @@ public:
     sampleCount(0),
     fileSize(0),
     bitsPerSample(1),
-    version(Header::Version1),
-    channelType(Header::Stereo)
+    version(DSFHeader::Version1),
+    channelType(DSFHeader::Stereo)
    {}
 
-  File *file;
-  ReadStyle style;
+  DSFFile *file;
+  TagLib::AudioProperties::ReadStyle style;
   int length;
   int bitrate;
   int sampleRate;
@@ -54,15 +52,17 @@ public:
   uint64_t sampleCount;
   uint64_t fileSize;
   int bitsPerSample;
-  Header::Version version;
-  Header::ChannelType channelType;
+  DSFHeader::Version version;
+  DSFHeader::ChannelType channelType;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
 // public members
 ////////////////////////////////////////////////////////////////////////////////
 
-DSF::Properties::Properties(File *file, ReadStyle style) : AudioProperties(style)
+DSFProperties::DSFProperties(DSFFile *file, 
+			     TagLib::AudioProperties::ReadStyle style) 
+  : TagLib::AudioProperties(style)
 {
   d = new PropertiesPrivate(file, style);
 
@@ -70,57 +70,57 @@ DSF::Properties::Properties(File *file, ReadStyle style) : AudioProperties(style
     read();
 }
 
-DSF::Properties::~Properties()
+DSFProperties::~DSFProperties()
 {
   delete d;
 }
 
-int DSF::Properties::length() const
+int DSFProperties::length() const
 {
   return d->sampleCount / d->sampleRate;
 }
 
-int DSF::Properties::bitrate() const
+int DSFProperties::bitrate() const
 {
   return d->sampleRate * d->bitsPerSample / 1024;
 }
 
-int DSF::Properties::sampleRate() const
+int DSFProperties::sampleRate() const
 {
   return d->sampleRate;
 }
 
-int DSF::Properties::channels() const
+int DSFProperties::channels() const
 {
   return d->channels;
 }
 
-DSF::Header::Version DSF::Properties::version() const
+DSFHeader::Version DSFProperties::version() const
 {
   return d->version;
 }
 
-DSF::Header::ChannelType DSF::Properties::channelType() const
+DSFHeader::ChannelType DSFProperties::channelType() const
 {
   return d->channelType;
 }
 
-uint64_t DSF::Properties::ID3v2Offset() const 
+uint64_t DSFProperties::ID3v2Offset() const 
 {
   return d->ID3v2Offset;
 }
 
-uint64_t DSF::Properties::fileSize() const
+uint64_t DSFProperties::fileSize() const
 {
   return d->fileSize;
 }
 
-uint64_t DSF::Properties::sampleCount() const
+uint64_t DSFProperties::sampleCount() const
 {
   return d->sampleCount;
 }
 
-int DSF::Properties::bitsPerSample() const
+int DSFProperties::bitsPerSample() const
 {
   return d->bitsPerSample;
 }
@@ -129,16 +129,16 @@ int DSF::Properties::bitsPerSample() const
 // private members
 ////////////////////////////////////////////////////////////////////////////////
 
-void DSF::Properties::read()
+void DSFProperties::read()
 {
   // Go to the beginning of the file
   d->file->seek(0);
 
-  Header h(d->file->readBlock(DSF::Header::DSD_HEADER_SIZE + 
-			      DSF::Header::FMT_HEADER_SIZE));
+  DSFHeader h(d->file->readBlock(DSFHeader::DSD_HEADER_SIZE + 
+				 DSFHeader::FMT_HEADER_SIZE));
 
   if (!h.isValid()) {
-    std::cerr << "DSF::Properties::read(): file header is not valid" << std::endl;
+    std::cerr << "DSFProperties::read(): file header is not valid" << std::endl;
     return;
   }
 

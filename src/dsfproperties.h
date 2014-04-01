@@ -22,85 +22,80 @@
 #ifndef TAGLIB_DSFPROPERTIES_H
 #define TAGLIB_DSFPROPERTIES_H
 
-#include <taglib/taglib_export.h>
 #include <taglib/audioproperties.h>
 
 #include "dsfheader.h"
 
-namespace TagLib {
 
-  namespace DSF {
+class DSFFile;
 
-    class File;
+//! An implementation of audio property reading for DSF
 
-    //! An implementation of audio property reading for DSF
+/*!
+ * This reads the data from a DSF stream found in the
+ * AudioProperties API.
+ */
 
-    /*!
-     * This reads the data from a DSF stream found in the
-     * AudioProperties API.
-     */
+class DSFProperties : public TagLib::AudioProperties
+{
+ public:
+  /*!
+   * Create an instance of DSF::Properties with the data read from the
+   * DSF::File \a file.
+   */
+  DSFProperties(DSFFile *file, 
+		TagLib::AudioProperties::ReadStyle style = Average);
 
-    class TAGLIB_EXPORT Properties : public AudioProperties
-    {
-    public:
-      /*!
-       * Create an instance of DSF::Properties with the data read from the
-       * DSF::File \a file.
-       */
-      Properties(File *file, ReadStyle style = Average);
+  /*!
+   * Destroys this DSF Properties instance.
+   */
+  virtual ~DSFProperties();
 
-      /*!
-       * Destroys this DSF Properties instance.
-       */
-      virtual ~Properties();
+  // Reimplementations.
 
-      // Reimplementations.
+  virtual int length() const;
+  virtual int bitrate() const;
+  virtual int sampleRate() const;
+  virtual int channels() const;
 
-      virtual int length() const;
-      virtual int bitrate() const;
-      virtual int sampleRate() const;
-      virtual int channels() const;
+  /*!
+   * Returns the DSF Version of the file.
+   */
+  DSFHeader::Version version() const;
 
-      /*!
-       * Returns the DSF Version of the file.
-       */
-      Header::Version version() const;
+  /*!
+   * Returns the channel type
+   */
+  DSFHeader::ChannelType channelType() const;
 
-      /*!
-       * Returns the channel type
-       */
-      Header::ChannelType channelType() const;
+  /*!
+   * Returns the ID3v2 offset in the file
+   */
+  uint64_t ID3v2Offset() const;
 
-      /*!
-       * Returns the ID3v2 offset in the file
-       */
-      uint64_t ID3v2Offset() const;
+  /*!
+   * Returns the file size
+   */
+  uint64_t fileSize() const;
 
-      /*!
-       * Returns the file size
-       */
-      uint64_t fileSize() const;
+  /*!
+   * Returns the sample count
+   */
+  uint64_t sampleCount() const;
 
-      /*!
-       * Returns the sample count
-       */
-      uint64_t sampleCount() const;
+  /*!
+   * Returns the bits per sample
+   */
+  int bitsPerSample() const;
 
-      /*!
-       * Returns the bits per sample
-       */
-      int bitsPerSample() const;
+ private:
+  DSFProperties(const DSFProperties &);
+  DSFProperties &operator=(const DSFProperties &);
 
-    private:
-      Properties(const Properties &);
-      Properties &operator=(const Properties &);
+  void read();
 
-      void read();
-
-      class PropertiesPrivate;
-      PropertiesPrivate *d;
-    };
-  }
-}
+  class PropertiesPrivate;
+  PropertiesPrivate *d;
+};
 
 #endif
