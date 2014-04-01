@@ -19,7 +19,12 @@ Dependencies:
 * **taglib 1.9.1** or newer
 * A C++11-compliant compiler
 
-Just do a `make` in the source directory and copy `metadsf` to somewhere in your `PATH`.
+```sh
+# You may have to tell configure where your taglib is located
+$ ./configure --prefix=/usr/local/
+$ make
+$ make install
+```
 
 Options
 -------
@@ -29,12 +34,12 @@ Usage: metadsf [options] file1 file2 file3 ...
 Display help info and exit.
 
 #### `--version` or `-v`
-Display the current version of `metadsf`.
+Display the current version of `metadsf` and exit.
 
 #### `--show-info` or `-i`
 Display audio properties of the specified DSF files.
 If more than one file are specified in the command line, each output line will be preceded by 
-the file name.
+the corresponding file name.
 
 #### `--show-tags` or `-t`
 Display all ID3v2 tags in the specified DSF files.
@@ -43,6 +48,11 @@ the file name.
 
 #### `--encoding` or `-e`
 Set the text encoding of your input to various commands. Valid encodings are: "UTF8" (default), "LATIN1", "UTF16", "UTF16LE", "UTF16BE".
+
+```sh
+$ metadsf --set-tag=TALB="My Album" --encoding=UTF8 mymusic.dsf
+$ metadsf --set-tag=TALB="My Album" -eUTF8
+```
 
 #### `--id3v2-version`
 Save ID3v2 tags in either 2.3.0 or 2.4.0 version. Can be either 3 or 4.
@@ -54,7 +64,7 @@ $ metadsf -sTPE1=XXX --id3v2-version=3
 #### `--add-tag` or `-a`
 Add a tag. Existing tags with the same name are untouched.
 ```sh
-$ metadsf --add-tag=TRCK=4 test.dsf
+$ metadsf --add-tag=TRCK=4 -aTPOS=1/2 test.dsf
 ```
 
 #### `--add-tags-from-file`
@@ -72,7 +82,7 @@ This **replaces** all occurences of the tag with the specified value.
 $ metadsf --show-tags test.dsf
 TPE2=XYZ
 TPE2=ABC
-# update and display tags
+# replace and display tags
 $ metadsf --set-tag=TPE=IJK --show-tags test.dsf
 TPE2=IJK
 ```
@@ -83,11 +93,14 @@ Same as `--set-tag`, but instead of specify the key-value pairs in the command l
 #### `--import-picture` or  `-p`
 Import picture into the DSF file
 ```sh
+# long form
 $ metadsf --import-picture='/path/to/your.jpg|3|Picture Comment' test.dsf
+# short form
+$ metadsf -p'/some/dir/file.jpg'
 ```
 
 The string is a list of fields separated by '|'. The first field is the path to your picture file.
-The second field is the picture type which is optional (the default is "3" which is "Front Cover")
+The second field is the picture type which is optional (the default is "3" which means "Front Cover")
 The third field is picture comment which is also optional.
 ```sh
 $ metadsf --import-picture='/path/to/your.jpg'
@@ -99,7 +112,7 @@ $ metadsf --import-picture='/path/to/your.jpg||My Comment'
 
 Currently GIF(`.gif`), TIFF (`.tif` or `.tiff`), PNG(`.png`) and JPEG(`.jpeg`, `.jpg`, `.jpe`) files are allowed.
  
-See Appendix I for a complete list of picture types.
+See Appendix I for the complete list of picture types.
 
 #### `--export-all-pictures`
 Export embedded pictures to files. Exported files are named `<ORIGINAL_FILENAME>_<PICTURE_TYPE>_<NUMBER>.<EXT>`.
@@ -140,12 +153,12 @@ Note that you can mix and match options together
 $ metadsf --remove-everything -sTALB=Thriller --import-picture=thriller.jpg 01-Beat_It.dsf 02-Thriller.dsf
 
 # Remove all pictures and a couple tags, and import new pictures
-$ metadsf --remove-all-pictures -r=TALB --import-picture=somepic.jpg --import-picture=anotherpic.jpg music.dsf
+$ metadsf --remove-all-pictures -rTALB,WCOP --import-picture=somepic.jpg --import-picture=anotherpic.jpg music.dsf
 ```
 
 TODO
 ----
-configure-style installation
+1. Support for TXXX, WXXX, TMCP, TIPL tags
 
 
 Appendix I
@@ -174,8 +187,8 @@ Below is the complete list of picture types.
 * 20: Publisher/Studio logotype
 
 Appendix II
-----------
-Below is the complete list of supported tag names
+-----------
+Below is the complete list of supported ID3v2 tags 
 * TALB
 * TBPM
 * TCOM
