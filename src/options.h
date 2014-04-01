@@ -19,43 +19,55 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-  const char *text =
-    R"(Usage: metadsf [options] files...
---help
-          Print usage and exit
---show-info
-          Print file info
---show-tags
-          Print tags
---encoding=...
-          Set encoding. Valid encodings are: UTF8(default), LATIN1, UTF16,
-UTF16LE, UTF16BE
---add-tag=<NAME>=<VALUE>
-          Add tag
---add-tags-from-file=<FILE>
-          Add tags from a file, one per line (TAG=VALUE)
---set-tag=NAME=...
-          Set tag. Old value will be overwritten
---set-tags-from-file=<FILE>
-          Set tags from a file, one per line (TAG=VALUE)
---remove-tags=a,b,c
-          Remove ALL occurences of the specified tags
---remove-pictures=t1,t2,t3
-          Remove pictures of the specified types
---remove-all-pictures
-          Remove ALL pictures
---remove-everything
-          Remove *ALL* ID3v2 tags including pictures
---id3v2-version
-          Which ID3V2 version to save. Can be either 3 or 4
---version
-          Display version info
---import-picture=file[|type|comment]
-          Import picture into file.
---export-picture
-          Export all pictures
---dry-run
-          Run without saving
+#include <list>
+#include <string>
+#include <taglib/tstring.h>
 
-For more complete documentation please go to https://github.com/pekingduck/metadsf
-)";
+#include "typedefs.h"
+
+#ifndef _OPTIONS_H_
+#define _OPTIONS_H_
+
+//namespace myopt {
+
+class OptionObj {
+public:
+  TagLib::String encoding;
+  TagLib::String version;
+  TagLib::String setTagsFile;
+  TagLib::String addTagsFile;
+  TagLib::String separator;
+  StringMap addTagMap;
+  //StringMap handyMap;
+  StringVector fileList;
+  StringVector addPicList;
+  StringVector removeTagList;
+  StringVector removePicList;
+  StringVector exportPicList;
+  bool showTags;
+  bool showInfo;
+  bool removeEverything;
+  bool dryRun;
+  bool removeAllPics;
+  bool exportPics;
+  bool showVersion;
+  bool showHelp;
+
+  OptionObj() : 
+    showTags(false),
+    showInfo(false), 
+    removeEverything(false),
+    dryRun(false), 
+    removeAllPics(false), 
+    exportPics(false), 
+    showVersion(false),
+    showHelp(false) {}
+
+  void printUsage();
+  void print();
+  bool parse(int argc, char *argv[]);  
+};
+
+//} // namespace
+
+#endif
