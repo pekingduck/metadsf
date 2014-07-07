@@ -37,7 +37,7 @@ void split(const std::string &s,
   }
   std::string::const_iterator substart = s.begin(), subend;
   while (true) {
-    subend = search(substart, s.end(), delim.begin(), delim.end());
+    subend = std::search(substart, s.end(), delim.begin(), delim.end());
     std::string temp(substart, subend);
     if (keep_empty || !temp.empty()) {
       result.push_back(temp);
