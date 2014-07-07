@@ -22,6 +22,7 @@
 #include <list>
 #include <taglib/tstringlist.h>
 #include <memory>
+#include <string.h>
 #include "optionparser.h"
 #include "options.h"
 #include "utils.h"
