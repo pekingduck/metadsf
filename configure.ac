@@ -1,6 +1,6 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
-AC_CONFIG_MACRO_DIR([/Users/gordonlo/dev/m4])
+AC_CONFIG_MACRO_DIR([m4])
 AC_PREREQ([2.69])
 AC_INIT([metadsf], [0.1], [pekingducklabs@gmail.com])
 AC_CONFIG_SRCDIR([src/main.cpp])
@@ -14,17 +14,14 @@ AC_PROG_CC
 AC_LANG(C++)
 # Checks for libraries.
 # taglib checks
-SAVED_LDFLAGS=$LDFLAGS
-SAVED_CXXFLAGS=$CXXFLAGS
-LDFLAGS="$LDFLAGS -L/usr/local/lib -ltag -lz"
-CXXFLAGS="-I/usr/local/include"
+SAVED_LIBS=$LIBS
+LIBS="$LIBS -ltag -lz"
 AC_LINK_IFELSE(
   [AC_LANG_PROGRAM([#include <taglib/tstring.h>],
     [TagLib::String dummy])],
   [TEST_LIBS="$TEST_LIBS -ltag -lz"] [HAVE_TAGLIB=1],
   [AC_MSG_FAILURE([TagLib is not installed.])])
-LDFLAGS=$SAVED_LDFLAGS
-CXXFLAGS=$SAVED_CXXFLAGS
+LIBS=$SAVED_LIBS
 # c++11 check
 AX_CXX_COMPILE_STDCXX_11([noext],[mandatory])
 # zlib check

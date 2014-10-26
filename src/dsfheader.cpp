@@ -19,6 +19,8 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
+#include <stdint.h>
+
 #include <bitset>
 
 #include <taglib/tbytevector.h>
@@ -197,7 +199,7 @@ void DSFHeader::parse(const TagLib::ByteVector &data)
 
   // Format version
   // There's only version 1 for now...
-  uint ver = data.toUInt(offset, false);
+  unsigned int ver = data.toUInt(offset, false);
   if (ver != 1) {
     std::cerr <<"DSD::Header::parse(): format version != 1" << std::endl;
     return;
@@ -213,7 +215,7 @@ void DSFHeader::parse(const TagLib::ByteVector &data)
   offset += INT_SIZE;
 
   // Channel Type
-  uint ct = data.toUInt(offset, false);
+  unsigned int ct = data.toUInt(offset, false);
   if (ct < 1 || ct > 7) {
     std::cerr <<"DSD::Header::parse(): channel type out of range" << std::endl;
     return;

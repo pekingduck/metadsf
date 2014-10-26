@@ -19,6 +19,8 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
+#include <stdint.h>
+
 #include <taglib/id3v2tag.h>
 #include <taglib/id3v2header.h>
 #include <taglib/tpropertymap.h>
