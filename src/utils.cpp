@@ -25,8 +25,8 @@
 
 //namespace utils {
 
-void split(const std::string &s, 
-	   const std::string &delim, 
+void split(const std::string &s,
+	   const std::string &delim,
 	   StringVector &result,
 	   const bool keep_empty,
 	   unsigned int upTo)
@@ -64,7 +64,7 @@ bool readPairsFromFile(const char *path, StringMap &m)
     std::cerr << "Failed to open " << path << std::endl;
     return false;
   }
-    
+
   std::string line;
   int i = 0;
   while (std::getline(infile, line)) {
@@ -89,7 +89,7 @@ bool readPairsFromFile(const char *path, StringMap &m)
   return true;
 }
 
-size_t loadFileIntoVector(const char *path, TagLib::ByteVector &v) 
+size_t loadFileIntoVector(const char *path, TagLib::ByteVector &v)
 {
   std::ifstream is(path, std::ifstream::binary);
 
@@ -98,7 +98,7 @@ size_t loadFileIntoVector(const char *path, TagLib::ByteVector &v)
   }
 
   // get the file size and create an appropriate buffer
-  is.seekg(0, is.end); 
+  is.seekg(0, is.end);
   size_t len = is.tellg();
   is.seekg(0, is.beg);
 
@@ -128,7 +128,7 @@ bool stringToLong(const std::string &s, long &l)
   try {
     l = std::stol(s);
     return true;
-  } catch (std::invalid_argument) {
+  } catch (std::invalid_argument&) {
     return false;
   }
 }
