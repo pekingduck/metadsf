@@ -1,3 +1,10 @@
+`ORG.SLM:`
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/Sound-Linux-More/metadsf)
+![GitHub Release Date](https://img.shields.io/github/release-date/Sound-Linux-More/metadsf)
+![GitHub repo size](https://img.shields.io/github/repo-size/Sound-Linux-More/metadsf)
+![GitHub all releases](https://img.shields.io/github/downloads/Sound-Linux-More/metadsf/total)
+![GitHub](https://img.shields.io/github/license/Sound-Linux-More/metadsf)  
+
 metadsf
 =======
 `metadsf` is a command line tool that lets you batch-edit ID3v2 tags embedded in your DSF files.
