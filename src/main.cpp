@@ -179,10 +179,11 @@ bool doDelete(MetaDSF &dsf, OptionObj &opt) {
 bool doAdd(MetaDSF &dsf, OptionObj &opt) {
   for (auto &i : opt.addTagMap) {
     TagLib::String name = MetaDSF::getFrameNameByID(i.first);
+    TagLib::String val = i.second;
     
     //std::cerr << "<ADD> set " << i.first << "(" << name << ") to ";
     //std::cerr << i.second << std::endl;
-    dsf.setTag(name, i.second);
+    dsf.setTag(name, val);
   }
   return true;
 }

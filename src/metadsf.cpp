@@ -146,19 +146,23 @@ void MetaDSF::printTags(const char *prefix) const
 
   TagLib::ID3v2::FrameList l = _i->_file.ID3v2Tag()->frameList();
   TagLib::ID3v2::FrameList::ConstIterator it;
-  
-  for (it = l.begin(); it != l.end(); it++) {
+
+  for (it = l.begin(); it != l.end(); it++)
+  {
+	TagLib::String val = (*it)->toString();
     std::cout << prefix;
-    std::cout << (*it)->frameID() << "=" << (*it)->toString() << std::endl;
+    std::cout << (*it)->frameID() << "=" << val.to8Bit(true) << std::endl;
   }
 }
  
 int MetaDSF::setTag(const TagLib::String &key, const TagLib::String &val, 
 		    bool replace) 
 {
+  std::string valt = val.to8Bit(false);
+  TagLib::String valu = TagLib::String(valt, _i->_encoding);
   TagLib::StringList vals;
-  
-  vals.append(val);
+
+  vals.append(valu);
   return setTag(key, vals, replace);
 }
 
