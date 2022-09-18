@@ -36,123 +36,127 @@
 
 class DSFHeader
 {
- public:
-  static const int DSD_HEADER_SIZE = 28;
-  static const int FMT_HEADER_SIZE = 52;
-  static const int LONG_INT_SIZE = 8;    // width of a long integer
-  static const int INT_SIZE = 4;         // width of an integer
+public:
+    static const int DSD_HEADER_SIZE = 28;
+    static const int FMT_HEADER_SIZE = 52;
+    static const int LONG_INT_SIZE = 8;    // width of a long integer
+    static const int INT_SIZE = 4;         // width of an integer
 
-  /*!
-   * Parses an DSF header based on \a data.
-   */
-  DSFHeader(const TagLib::ByteVector &data);
+    /*!
+     * Parses an DSF header based on \a data.
+     */
+    DSFHeader(const TagLib::ByteVector &data);
 
-  /*!
-   * Does a shallow copy of \a h.
-   */
-  DSFHeader(const DSFHeader &h);
+    /*!
+     * Does a shallow copy of \a h.
+     */
+    DSFHeader(const DSFHeader &h);
 
-  /*!
-   * Destroys this Header instance.
-   */
-  virtual ~DSFHeader();
+    /*!
+     * Destroys this Header instance.
+     */
+    virtual ~DSFHeader();
 
-  /*!
-   * Returns true if header has legal values.
-   */
-  bool isValid() const;
+    /*!
+     * Returns true if header has legal values.
+     */
+    bool isValid() const;
 
-  /*!
-   * The DSD file format version
-   */
-  enum Version {
-    //! DSD Version 1
-    Version1 = 1
-  };
+    /*!
+     * The DSD file format version
+     */
+    enum Version
+    {
+        //! DSD Version 1
+        Version1 = 1
+    };
 
-  /*!
-   * Channel Type:
-   */
-  enum ChannelType {
-    MinType = 0,
+    /*!
+     * Channel Type:
+     */
+    enum ChannelType
+    {
+        MinType = 0,
 
-    //! 1: mono
-    Mono = 1,
-    //! 2: stereo (front left, front right)
-    Stereo = 2,
-    //! 3: 3 channels (front left, front right, center)
-    ThreeChannels = 3,
-    //! 4: quad (front left/right, back left/right)
-    Quad = 4,
-    //! 5: 4 channels (front left, front right, low frequency, center)
-    FourChannels = 5,
-    //! 6: 5 channels (front left/right, back left/right, center)
-    FiveChannels = 6,
-    //! 7: 5.1 channels (front left/right, back left/right, center, low freq.)
-    FiveOneChannels = 7,
+        //! 1: mono
+        Mono = 1,
+        //! 2: stereo (front left, front right)
+        Stereo = 2,
+        //! 3: 3 channels (front left, front right, center)
+        ThreeChannels = 3,
+        //! 4: quad (front left/right, back left/right)
+        Quad = 4,
+        //! 5: 4 channels (front left, front right, low frequency, center)
+        FourChannels = 5,
+        //! 6: 5 channels (front left/right, back left/right, center)
+        FiveChannels = 6,
+        //! 7: 5.1 channels (front left/right, back left/right, center, low freq.)
+        FiveOneChannels = 7,
 
-    MaxType = 8
-  };
+        MaxType = 8
+    };
 
-  /*!
-   * Returns the DSD Version of the header.
-   */
-  Version version() const;
+    /*!
+     * Returns the DSD Version of the header.
+     */
+    Version version() const;
 
-  /*!
-   * Returns the Channel Type of the header
-   */
-  ChannelType channelType() const;
+    /*!
+     * Returns the Channel Type of the header
+     */
+    ChannelType channelType() const;
 
-  /*!
-   * Returns the Channel Num of the header
-   */
-  unsigned short channelNum() const;
+    /*!
+     * Returns the Channel Num of the header
+     */
+    unsigned short channelNum() const;
 
-  /*!
-   * Returns the sample rate in Hz.
-   */
-  unsigned int sampleRate() const;
+    /*!
+     * Returns the sample rate in Hz.
+     */
+    unsigned int sampleRate() const;
 
-  /*!
-   * Returns the sample count
-   */
-  uint64_t sampleCount() const;
+    /*!
+     * Returns the sample count
+     */
+    uint64_t sampleCount() const;
 
-  /*!
-   * Returns the bits per sample
-   */
-  unsigned short bitsPerSample() const;
+    /*!
+     * Returns the bits per sample
+     */
+    unsigned short bitsPerSample() const;
 
-  /*!
-   * Returns the offset to the metadata block
-   */
-  uint64_t ID3v2Offset() const;
+    /*!
+     * Returns the offset to the metadata block
+     */
+    uint64_t ID3v2Offset() const;
 
-  /*!
-   * Returns the file size
-   */
-  uint64_t fileSize() const;
+    /*!
+     * Returns the file size
+     */
+    uint64_t fileSize() const;
 
-  /*!
-   * Makes a shallow copy of the header.
-   */
-  DSFHeader &operator=(const DSFHeader &h);
+    /*!
+     * Makes a shallow copy of the header.
+     */
+    DSFHeader &operator=(const DSFHeader &h);
 
-  // Assume LSB comes first
-  inline uint64_t bytesToUInt64(const char *v, uint64_t offset = 0) {
-    uint64_t res = 0;
-    for (int i = 0; i < LONG_INT_SIZE; i++) {
-      res |= static_cast<uint64_t>(static_cast<unsigned char>(v[offset + i])) 
-	<< (i * 8);
+    // Assume LSB comes first
+    inline uint64_t bytesToUInt64(const char *v, uint64_t offset = 0)
+    {
+        uint64_t res = 0;
+        for (int i = 0; i < LONG_INT_SIZE; i++)
+        {
+            res |= static_cast<uint64_t>(static_cast<unsigned char>(v[offset + i]))
+                   << (i * 8);
+        }
+        return res;
     }
-    return res;
-  }
- private:
-  void parse(const TagLib::ByteVector &data);
+private:
+    void parse(const TagLib::ByteVector &data);
 
-  class HeaderPrivate;
-  HeaderPrivate *d;
+    class HeaderPrivate;
+    HeaderPrivate *d;
 };
 
 

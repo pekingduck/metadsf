@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 AC_CONFIG_MACRO_DIR([m4])
 AC_PREREQ([2.69])
-AC_INIT([metadsf], [0.1], [pekingducklabs@gmail.com])
+AC_INIT([metadsf], [0.2], [pekingducklabs@gmail.com])
 AC_CONFIG_SRCDIR([src/main.cpp])
 #AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE

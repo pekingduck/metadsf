@@ -38,64 +38,64 @@ class DSFFile;
 
 class DSFProperties : public TagLib::AudioProperties
 {
- public:
-  /*!
-   * Create an instance of DSF::Properties with the data read from the
-   * DSF::File \a file.
-   */
-  DSFProperties(DSFFile *file, 
-		TagLib::AudioProperties::ReadStyle style = Average);
+public:
+    /*!
+     * Create an instance of DSF::Properties with the data read from the
+     * DSF::File \a file.
+     */
+    DSFProperties(DSFFile *file,
+                  TagLib::AudioProperties::ReadStyle style = Average);
 
-  /*!
-   * Destroys this DSF Properties instance.
-   */
-  virtual ~DSFProperties();
+    /*!
+     * Destroys this DSF Properties instance.
+     */
+    virtual ~DSFProperties();
 
-  // Reimplementations.
+    // Reimplementations.
 
-  virtual int length() const;
-  virtual int bitrate() const;
-  virtual int sampleRate() const;
-  virtual int channels() const;
+    virtual int length() const;
+    virtual int bitrate() const;
+    virtual int sampleRate() const;
+    virtual int channels() const;
 
-  /*!
-   * Returns the DSF Version of the file.
-   */
-  DSFHeader::Version version() const;
+    /*!
+     * Returns the DSF Version of the file.
+     */
+    DSFHeader::Version version() const;
 
-  /*!
-   * Returns the channel type
-   */
-  DSFHeader::ChannelType channelType() const;
+    /*!
+     * Returns the channel type
+     */
+    DSFHeader::ChannelType channelType() const;
 
-  /*!
-   * Returns the ID3v2 offset in the file
-   */
-  uint64_t ID3v2Offset() const;
+    /*!
+     * Returns the ID3v2 offset in the file
+     */
+    uint64_t ID3v2Offset() const;
 
-  /*!
-   * Returns the file size
-   */
-  uint64_t fileSize() const;
+    /*!
+     * Returns the file size
+     */
+    uint64_t fileSize() const;
 
-  /*!
-   * Returns the sample count
-   */
-  uint64_t sampleCount() const;
+    /*!
+     * Returns the sample count
+     */
+    uint64_t sampleCount() const;
 
-  /*!
-   * Returns the bits per sample
-   */
-  int bitsPerSample() const;
+    /*!
+     * Returns the bits per sample
+     */
+    int bitsPerSample() const;
 
- private:
-  DSFProperties(const DSFProperties &);
-  DSFProperties &operator=(const DSFProperties &);
+private:
+    DSFProperties(const DSFProperties &);
+    DSFProperties &operator=(const DSFProperties &);
 
-  void read();
+    void read();
 
-  class PropertiesPrivate;
-  PropertiesPrivate *d;
+    class PropertiesPrivate;
+    PropertiesPrivate *d;
 };
 
 #endif
