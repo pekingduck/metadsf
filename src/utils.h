@@ -30,11 +30,11 @@
 
 bool readPairsFromFile(const char *, StringMap &);
 
-void split(const std::string &s, 
-	   const std::string &delim, 
-	   StringVector &v,
-	   const bool keep_empty,
-	   unsigned int upTo = 0);
+void split(const std::string &s,
+           const std::string &delim,
+           StringVector &v,
+           const bool keep_empty,
+           unsigned int upTo = 0);
 
 size_t loadFileIntoVector(const char *path, TagLib::ByteVector &v);
 

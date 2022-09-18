@@ -30,42 +30,43 @@
 
 //namespace myopt {
 
-class OptionObj {
+class OptionObj
+{
 public:
-  TagLib::String encoding;
-  TagLib::String version;
-  TagLib::String setTagsFile;
-  TagLib::String addTagsFile;
-  TagLib::String separator;
-  StringMap addTagMap;
-  //StringMap handyMap;
-  StringVector fileList;
-  StringVector addPicList;
-  StringVector removeTagList;
-  StringVector removePicList;
-  StringVector exportPicList;
-  bool showTags;
-  bool showInfo;
-  bool removeEverything;
-  bool dryRun;
-  bool removeAllPics;
-  bool exportPics;
-  bool showVersion;
-  bool showHelp;
+    TagLib::String encoding;
+    TagLib::String version;
+    TagLib::String setTagsFile;
+    TagLib::String addTagsFile;
+    TagLib::String separator;
+    StringMap addTagMap;
+    //StringMap handyMap;
+    StringVector fileList;
+    StringVector addPicList;
+    StringVector removeTagList;
+    StringVector removePicList;
+    StringVector exportPicList;
+    bool showTags;
+    bool showInfo;
+    bool removeEverything;
+    bool dryRun;
+    bool removeAllPics;
+    bool exportPics;
+    bool showVersion;
+    bool showHelp;
 
-  OptionObj() : 
-    showTags(false),
-    showInfo(false), 
-    removeEverything(false),
-    dryRun(false), 
-    removeAllPics(false), 
-    exportPics(false), 
-    showVersion(false),
-    showHelp(false) {}
+    OptionObj() :
+        showTags(false),
+        showInfo(false),
+        removeEverything(false),
+        dryRun(false),
+        removeAllPics(false),
+        exportPics(false),
+        showVersion(false),
+        showHelp(false) {}
 
-  void printUsage();
-  void print();
-  bool parse(int argc, char *argv[]);  
+    void printUsage();
+    void print();
+    bool parse(int argc, char *argv[]);
 };
 
 //} // namespace
