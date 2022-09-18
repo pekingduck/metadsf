@@ -25,9 +25,11 @@ Installation
 Dependencies:
 * **taglib 1.9.1** or newer
 * A C++11-compliant compiler
+* autotools (autoconf, automake,...)
 
 ```sh
 # You may have to tell configure where your taglib is located
+$ autoreconf -fiv
 $ ./configure --prefix=/usr/local/
 $ make
 $ make install
